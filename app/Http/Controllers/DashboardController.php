@@ -9,12 +9,18 @@ use App\Models\Matricula;
 use App\Models\Nota;
 use App\Models\Professor;
 use App\Models\Turma;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        if ($request->user()->isAluno()) {
+            return $this->painelDoAluno($request->user());
+        }
+
         $today = now()->toDateString();
 
         return view('dashboard.index', [
@@ -60,6 +66,52 @@ class DashboardController extends Controller
                 ->latest('id_matricula')
                 ->limit(5)
                 ->get(),
+        ]);
+    }
+
+    private function painelDoAluno(User $user): View
+    {
+        $aluno = $user->aluno()
+            ->with(['matriculas' => fn ($query) => $query->with('turma')->latest('data_matricula')])
+            ->first();
+
+        if (! $aluno) {
+            return view('dashboard.aluno', [
+                'aluno' => null,
+                'matriculaAtiva' => null,
+                'gradeStats' => null,
+                'attendanceStats' => null,
+                'frequenciaPercentual' => null,
+                'recentNotes' => collect(),
+                'recentAttendance' => collect(),
+            ]);
+        }
+
+        $gradeStats = $aluno->notas()
+            ->selectRaw('COUNT(*) as total, AVG(valor) as media, MIN(valor) as menor, MAX(valor) as maior')
+            ->first();
+
+        $attendanceStats = $aluno->frequencias()
+            ->selectRaw('COUNT(*) as total')
+            ->selectRaw("SUM(CASE WHEN situacao = 'presente' THEN 1 ELSE 0 END) as presencas")
+            ->selectRaw("SUM(CASE WHEN situacao = 'ausente' THEN 1 ELSE 0 END) as faltas")
+            ->selectRaw("SUM(CASE WHEN situacao = 'justificada' THEN 1 ELSE 0 END) as justificadas")
+            ->selectRaw("SUM(CASE WHEN situacao = 'atrasado' THEN 1 ELSE 0 END) as atrasos")
+            ->first();
+
+        $frequenciaPercentual = (int) $attendanceStats->total > 0
+            ? round((((int) $attendanceStats->presencas + (int) $attendanceStats->atrasos) / (int) $attendanceStats->total) * 100, 1)
+            : null;
+
+        return view('dashboard.aluno', [
+            'aluno' => $aluno,
+            'matriculaAtiva' => $aluno->matriculas->firstWhere('situacao', 'ativa') ?? $aluno->matriculas->first(),
+            'gradeStats' => $gradeStats,
+            'attendanceStats' => $attendanceStats,
+            'frequenciaPercentual' => $frequenciaPercentual,
+            'recentNotes' => $aluno->notas()->with(['disciplina', 'turma'])->latest('id_nota')->limit(5)->get(),
+            'recentAttendance' => $aluno->frequencias()->with(['disciplina', 'turma'])
+                ->orderByDesc('data_aula')->orderByDesc('id_frequencia')->limit(6)->get(),
         ]);
     }
 }

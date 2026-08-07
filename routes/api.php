@@ -9,7 +9,7 @@ use App\Http\Controllers\ProfessorController;
 use App\Http\Controllers\TurmaController;
 use Illuminate\Support\Facades\Route;
 
-Route::name('api.')->group(function (): void {
+Route::middleware(['auth', 'role:administrador,professor'])->name('api.')->group(function (): void {
     Route::apiResources([
         'alunos' => AlunoController::class,
         'professores' => ProfessorController::class,

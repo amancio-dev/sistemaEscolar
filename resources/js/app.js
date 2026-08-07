@@ -82,55 +82,6 @@ document.querySelectorAll('[data-toggle-password]').forEach((button) => {
     });
 });
 
-/* ── Register form: CPF-as-password for alunos/professores ──────────── */
-
-const tipoUsuarioSelect = document.querySelector('#tipo_usuario');
-
-if (tipoUsuarioSelect) {
-    const cpfField = document.querySelector('#cpf-field');
-    const cpfInput = document.querySelector('#cpf');
-    const passwordFields = document.querySelector('#password-fields');
-    const passwordHint = document.querySelector('#password-hint');
-    const passwordInput = document.querySelector('#password');
-    const passwordConfirmInput = document.querySelector('#password_confirmation');
-
-    const applyCpfMask = (value) => {
-        const digits = value.replace(/\D/g, '').slice(0, 11);
-        return digits
-            .replace(/(\d{3})(\d)/, '$1.$2')
-            .replace(/(\d{3})(\d)/, '$1.$2')
-            .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-    };
-
-    cpfInput?.addEventListener('input', (event) => {
-        event.target.value = applyCpfMask(event.target.value);
-    });
-
-    const syncFieldsToProfile = (shouldClear) => {
-        const usesCpf = ['aluno', 'professor'].includes(tipoUsuarioSelect.value);
-
-        cpfField.hidden = !usesCpf;
-        passwordFields.hidden = usesCpf;
-        passwordHint.hidden = usesCpf;
-
-        cpfInput.required = usesCpf;
-        passwordInput.required = !usesCpf;
-        passwordConfirmInput.required = !usesCpf;
-
-        if (!shouldClear) return;
-
-        if (usesCpf) {
-            passwordInput.value = '';
-            passwordConfirmInput.value = '';
-        } else {
-            cpfInput.value = '';
-        }
-    };
-
-    tipoUsuarioSelect.addEventListener('change', () => syncFieldsToProfile(true));
-    syncFieldsToProfile(false);
-}
-
 /* ── Custom confirm modal ──────────────────────────────────────── */
 
 function createConfirmModal(message) {
@@ -222,6 +173,24 @@ document.querySelectorAll('[data-mask]').forEach((input) => {
         input.value = formatter(input.value);
     });
 });
+
+/* ── Attendance justification ─────────────────────────────────── */
+
+const attendanceStatus = document.querySelector('#attendance-status');
+const justificationField = document.querySelector('[data-justification-field]');
+const justificationInput = document.querySelector('#attendance-justification');
+
+if (attendanceStatus && justificationField && justificationInput) {
+    const syncJustification = () => {
+        const acceptsJustification = ['ausente', 'justificada'].includes(attendanceStatus.value);
+        justificationField.hidden = !acceptsJustification;
+        justificationInput.disabled = !acceptsJustification;
+        justificationInput.required = attendanceStatus.value === 'justificada';
+    };
+
+    attendanceStatus.addEventListener('change', syncJustification);
+    syncJustification();
+}
 
 /* ── Counter animation ─────────────────────────────────────────── */
 

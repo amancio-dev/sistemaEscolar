@@ -39,16 +39,18 @@
                 @endforeach
             </select>
         </label>
-        <label class="field"><span>Data da aula <b>*</b></span><input type="date" name="data_aula"
+        <label class="field"><span>Data da aula <b>*</b></span><input type="date" name="data_aula" max="{{ now()->format('Y-m-d') }}"
                 value="{{ old('data_aula', $editing ? $record->data_aula?->format('Y-m-d') : now()->format('Y-m-d')) }}"
                 required></label>
-        <label class="field"><span>Situação <b>*</b></span><select name="situacao" required>
+        <label class="field"><span>Situação <b>*</b></span><select id="attendance-status" name="situacao" required>
                 @foreach (['presente' => 'Presente', 'ausente' => 'Ausente', 'justificada' => 'Falta justificada', 'atrasado' => 'Atrasado'] as $value => $label)
                     <option value="{{ $value }}" @selected(old('situacao', $record->situacao ?? 'presente') === $value)>{{ $label }}</option>
                 @endforeach
             </select></label>
-        <label class="field field-full"><span>Justificativa</span>
-            <textarea name="justificativa" rows="4" placeholder="Informe o motivo quando necessário">{{ old('justificativa', $record->justificativa ?? '') }}</textarea>
+        <label class="field field-full" data-justification-field><span>Justificativa</span>
+            <textarea id="attendance-justification" name="justificativa" rows="4" maxlength="1000"
+                placeholder="Informe o motivo da falta; obrigatório quando a falta for justificada">{{ old('justificativa', $record->justificativa ?? '') }}</textarea>
+            <small class="field-hint">Use este campo apenas para faltas ou faltas justificadas.</small>
         </label>
     </div>
 </div>

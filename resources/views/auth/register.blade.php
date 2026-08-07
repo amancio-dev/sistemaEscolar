@@ -16,7 +16,7 @@
 
     <p class="eyebrow">Novo por aqui</p>
     <h1 class="auth-title">Criar sua conta</h1>
-    <p class="auth-subtitle">Preencha os dados abaixo para solicitar acesso ao portal acadêmico.</p>
+    <p class="auth-subtitle">Crie seu acesso de aluno para consultar suas próprias notas e frequências.</p>
 
     <form class="auth-form" method="POST" action="{{ route('register.store') }}" novalidate>
         @csrf
@@ -31,45 +31,17 @@
             <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="seunome@instituicao.edu.br" required autocomplete="username">
         </div>
 
-        <div class="field">
-            <label for="tipo_usuario">Perfil de acesso <b>*</b></label>
-            <select id="tipo_usuario" name="tipo_usuario" required>
-                <option value="" disabled {{ old('tipo_usuario') ? '' : 'selected' }}>Selecione um perfil</option>
-                <option value="aluno" {{ old('tipo_usuario') === 'aluno' ? 'selected' : '' }}>Aluno</option>
-                <option value="professor" {{ old('tipo_usuario') === 'professor' ? 'selected' : '' }}>Professor</option>
-                <option value="administrador" {{ old('tipo_usuario') === 'administrador' ? 'selected' : '' }}>Administrador</option>
-            </select>
-        </div>
-
-        <div id="cpf-field" class="field" hidden>
+        <div id="cpf-field" class="field">
             <label for="cpf">CPF <b>*</b></label>
-            <input type="text" id="cpf" name="cpf" value="{{ old('cpf') }}" placeholder="000.000.000-00" inputmode="numeric" maxlength="14" autocomplete="off">
-            <p class="auth-hint">Alunos e professores usam o CPF (somente números) como senha de acesso.</p>
+            <input type="text" id="cpf" name="cpf" value="{{ old('cpf') }}" placeholder="000.000.000-00"
+                inputmode="numeric" maxlength="14" data-mask="cpf" required autocomplete="off">
+            <p class="auth-hint">Sua senha inicial será o CPF com somente números.</p>
         </div>
 
-        <div id="password-fields" class="form-grid form-grid--auth">
-            <div class="field">
-                <label for="password">Senha <b>*</b></label>
-                <div class="auth-password-field">
-                    <input type="password" id="password" name="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password">
-                    <button type="button" class="auth-password-toggle" data-toggle-password="password" aria-label="Mostrar senha">
-                        <svg viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" /><circle cx="12" cy="12" r="3" /></svg>
-                    </button>
-                </div>
-            </div>
-
-            <div class="field">
-                <label for="password_confirmation">Confirmar senha <b>*</b></label>
-                <div class="auth-password-field">
-                    <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Repita a senha" autocomplete="new-password">
-                    <button type="button" class="auth-password-toggle" data-toggle-password="password_confirmation" aria-label="Mostrar senha">
-                        <svg viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" /><circle cx="12" cy="12" r="3" /></svg>
-                    </button>
-                </div>
-            </div>
+        <div class="access-notice">
+            <strong>Acesso limitado e seguro</strong>
+            <span>Contas criadas aqui recebem somente o perfil de aluno. Perfis administrativos são concedidos pela escola.</span>
         </div>
-
-        <p id="password-hint" class="auth-hint">A senha deve ter ao menos 8 caracteres, incluindo letras e números.</p>
 
         <button type="submit" class="primary-button auth-submit">
             <span>Criar conta</span>

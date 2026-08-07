@@ -10,6 +10,7 @@ use App\Http\Controllers\NotaController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\ProfessorController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StudentPortalController;
 use App\Http\Controllers\TurmaController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,13 +37,20 @@ Route::middleware('auth')->group(function () {
     Route::put('/perfil', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/perfil/senha', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
-    Route::resources([
-        'alunos' => AlunoController::class,
-        'professores' => ProfessorController::class,
-        'turmas' => TurmaController::class,
-        'disciplinas' => DisciplinaController::class,
-        'matriculas' => MatriculaController::class,
-        'notas' => NotaController::class,
-        'frequencias' => FrequenciaController::class,
-    ], ['except' => ['show']]);
+    Route::middleware('role:aluno')->prefix('aluno')->name('portal.')->group(function () {
+        Route::get('/notas', [StudentPortalController::class, 'notas'])->name('notas');
+        Route::get('/frequencia', [StudentPortalController::class, 'frequencias'])->name('frequencias');
+    });
+
+    Route::middleware('role:administrador,professor')->group(function () {
+        Route::resources([
+            'alunos' => AlunoController::class,
+            'professores' => ProfessorController::class,
+            'turmas' => TurmaController::class,
+            'disciplinas' => DisciplinaController::class,
+            'matriculas' => MatriculaController::class,
+            'notas' => NotaController::class,
+            'frequencias' => FrequenciaController::class,
+        ], ['except' => ['show']]);
+    });
 });

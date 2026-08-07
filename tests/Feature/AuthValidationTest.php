@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -9,18 +10,18 @@ class AuthValidationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_registration_password_validation_message_is_portuguese(): void
+    public function test_public_registration_cannot_create_an_administrator(): void
     {
-        $response = $this->from('/cadastrar')->post('/cadastrar', [
+        $response = $this->post('/cadastrar', [
             'name' => 'Maria Silva',
             'email' => 'maria@example.com',
+            'cpf' => '123.456.789-00',
             'tipo_usuario' => 'administrador',
-            'password' => '12345678',
-            'password_confirmation' => '12345678',
         ]);
 
-        $response->assertSessionHasErrors([
-            'password' => 'A senha deve conter pelo menos uma letra.',
-        ]);
+        $response->assertRedirect(route('inicio'));
+
+        $user = User::query()->where('email', 'maria@example.com')->firstOrFail();
+        $this->assertSame('aluno', $user->tipo_usuario);
     }
 }

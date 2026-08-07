@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Aluno;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -24,6 +25,14 @@ class AlunoController extends CrudController
 
     protected function rules(?int $id = null): array
     {
+        $cpfDigits = preg_replace('/\D/', '', (string) request('cpf'));
+
+        if (strlen($cpfDigits) === 11) {
+            request()->merge([
+                'cpf' => preg_replace('/(\d{3})(\d{3})(\d{3})(\d{2})/', '$1.$2.$3-$4', $cpfDigits),
+            ]);
+        }
+
         $prefix = $id === null ? 'required' : 'sometimes';
 
         return [
@@ -44,14 +53,48 @@ class AlunoController extends CrudController
     protected function prepareCreate(array $validated): array
     {
         if (empty($validated['user_id'])) {
-            $account = Str::lower(Str::slug($validated['numero_matricula'], '.'));
-            $user = User::create([
-                'name' => $validated['nome'],
-                'email' => "aluno.{$account}@sistema.local",
-                'password' => Str::random(40),
-                'tipo_usuario' => 'aluno',
-                'situacao' => 'ativo',
-            ]);
+            $cpfDigits = preg_replace('/\D/', '', $validated['cpf']);
+            $email = $validated['email'] ?? null;
+            $accountStatus = ($validated['situacao'] ?? 'ativo') === 'ativo' ? 'ativo' : 'inativo';
+
+            // Reaproveita uma conta de aluno criada no cadastro público e ainda
+            // não vinculada a um registro acadêmico.
+            $user = User::query()
+                ->where('tipo_usuario', 'aluno')
+                ->whereDoesntHave('aluno')
+                ->where(function ($query) use ($email, $validated): void {
+                    $query->where('cpf', $validated['cpf']);
+
+                    if ($email) {
+                        $query->orWhere('email', $email);
+                    }
+                })
+                ->first();
+
+            if (! $user) {
+                $account = Str::lower(Str::slug($validated['numero_matricula'], '.'));
+                $accountEmail = $email && ! User::query()->where('email', $email)->exists()
+                    ? $email
+                    : "aluno.{$account}@sistema.local";
+                $accountCpf = User::query()->where('cpf', $validated['cpf'])->exists()
+                    ? null
+                    : $validated['cpf'];
+
+                $user = User::create([
+                    'name' => $validated['nome'],
+                    'email' => $accountEmail,
+                    'cpf' => $accountCpf,
+                    'password' => Hash::make($cpfDigits),
+                    'tipo_usuario' => 'aluno',
+                    'situacao' => $accountStatus,
+                ]);
+            } else {
+                $user->update([
+                    'name' => $validated['nome'],
+                    'situacao' => $accountStatus,
+                ]);
+            }
+
             $validated['user_id'] = $user->id;
         }
 
@@ -60,7 +103,10 @@ class AlunoController extends CrudController
 
     protected function afterUpdate(Model $record): void
     {
-        User::query()->whereKey($record->user_id)->update(['name' => $record->nome]);
+        User::query()->whereKey($record->user_id)->update([
+            'name' => $record->nome,
+            'situacao' => $record->situacao === 'ativo' ? 'ativo' : 'inativo',
+        ]);
     }
 
     protected function afterDelete(Model $record): void

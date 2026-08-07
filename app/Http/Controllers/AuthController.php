@@ -7,8 +7,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
 class AuthController extends Controller
@@ -73,59 +71,47 @@ class AuthController extends Controller
      */
     public function register(Request $request): RedirectResponse
     {
-        $tipo = $request->input('tipo_usuario');
-        $usesCpfAsPassword = in_array($tipo, ['aluno', 'professor'], true);
+        $submittedCpfDigits = preg_replace('/\D/', '', (string) $request->input('cpf'));
+
+        if (strlen($submittedCpfDigits) === 11) {
+            $request->merge([
+                'cpf' => preg_replace('/(\d{3})(\d{3})(\d{3})(\d{2})/', '$1.$2.$3-$4', $submittedCpfDigits),
+            ]);
+        }
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
-            'tipo_usuario' => ['required', 'in:administrador,professor,aluno'],
-            'cpf' => [
-                Rule::requiredIf($usesCpfAsPassword),
-                'nullable',
-                'string',
-                'regex:/^\d{3}\.?\d{3}\.?\d{3}-?\d{2}$/',
-                'unique:users,cpf',
-            ],
-            'password' => [
-                Rule::requiredIf(! $usesCpfAsPassword),
-                'nullable',
-                'confirmed',
-                Password::min(8)->letters()->numbers(),
-            ],
+            'cpf' => ['required', 'string', 'regex:/^\d{3}\.?\d{3}\.?\d{3}-?\d{2}$/', 'unique:users,cpf'],
         ], [
             'cpf.regex' => 'Informe um CPF válido, no formato 000.000.000-00.',
-            'password.letters' => 'A senha deve conter pelo menos uma letra.',
-            'password.numbers' => 'A senha deve conter pelo menos um número.',
         ], [
             'name' => 'nome',
             'email' => 'e-mail',
-            'tipo_usuario' => 'perfil',
             'cpf' => 'CPF',
-            'password' => 'senha',
         ]);
 
-        $cpfDigits = $usesCpfAsPassword ? preg_replace('/\D/', '', $validated['cpf']) : null;
-        $cpfFormatted = $usesCpfAsPassword ? preg_replace('/(\d{3})(\d{3})(\d{3})(\d{2})/', '$1.$2.$3-$4', $cpfDigits) : null;
+        $cpfDigits = preg_replace('/\D/', '', $validated['cpf']);
+        $cpfFormatted = preg_replace('/(\d{3})(\d{3})(\d{3})(\d{2})/', '$1.$2.$3-$4', $cpfDigits);
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'cpf' => $cpfFormatted,
-            'tipo_usuario' => $validated['tipo_usuario'],
+            // O cadastro público nunca concede perfil administrativo ou docente.
+            'tipo_usuario' => 'aluno',
             'situacao' => 'ativo',
-            'password' => Hash::make($usesCpfAsPassword ? $cpfDigits : $validated['password']),
+            'password' => Hash::make($cpfDigits),
         ]);
 
         Auth::login($user);
 
         $request->session()->regenerate();
 
-        $message = $usesCpfAsPassword
-            ? 'Cadastro realizado com sucesso! Sua senha de acesso é o seu CPF (somente números).'
-            : 'Cadastro realizado com sucesso! Bem-vindo(a), '.$user->name.'.';
-
-        return redirect()->route('inicio')->with('success', $message);
+        return redirect()->route('inicio')->with(
+            'success',
+            'Cadastro de aluno realizado! Sua senha de acesso é o seu CPF (somente números).'
+        );
     }
 
     /**

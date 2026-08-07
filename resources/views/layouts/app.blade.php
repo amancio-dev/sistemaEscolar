@@ -21,7 +21,9 @@
         {{-- ── Institutional utility bar ─────────────────────────── --}}
         <div class="util-bar">
             <div class="util-bar-inner">
-                <span class="util-bar-item util-bar-brand">Portal Acadêmico · Rede Federal de Ensino</span>
+                <span class="util-bar-item util-bar-brand">
+                    {{ auth()->user()->isAluno() ? 'Área do Aluno · Rede Federal de Ensino' : 'Portal Acadêmico · Rede Federal de Ensino' }}
+                </span>
                 <div class="util-bar-right">
                     <span class="util-bar-item">Ano letivo {{ now()->year }}</span>
                     <span class="util-bar-sep" aria-hidden="true">|</span>
@@ -45,7 +47,7 @@
                     </span>
                     <span class="brand-text">
                         <strong>Sistema Escolar</strong>
-                        <small>Gestão Acadêmica Integrada</small>
+                        <small>{{ auth()->user()->isAluno() ? 'Área de Consulta do Aluno' : 'Gestão Acadêmica Integrada' }}</small>
                     </span>
                 </a>
 
@@ -62,6 +64,18 @@
                         <span>Painel</span>
                     </a>
 
+                    @if (auth()->user()->isAluno())
+                        <a class="nav-link {{ request()->routeIs('portal.notas') ? 'is-active' : '' }}"
+                            href="{{ route('portal.notas') }}">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9M10 19V5M16 19v-7M22 19V2" /></svg>
+                            <span>Minhas notas</span>
+                        </a>
+                        <a class="nav-link {{ request()->routeIs('portal.frequencias') ? 'is-active' : '' }}"
+                            href="{{ route('portal.frequencias') }}">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" /></svg>
+                            <span>Minha frequência</span>
+                        </a>
+                    @else
                     <div class="nav-item-group {{ request()->routeIs('alunos.*', 'professores.*') ? 'is-active' : '' }}">
                         <button class="nav-link nav-link--toggle" type="button" aria-haspopup="true" aria-expanded="false">
                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm13 10v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
@@ -119,6 +133,7 @@
                             </a>
                         </div>
                     </div>
+                    @endif
 
                     <div class="nav-profile-mobile">
                         <span class="profile-avatar">{{ Illuminate\Support\Str::of(auth()->user()->name)->explode(' ')->map(fn ($p) => mb_substr($p, 0, 1))->take(2)->implode('') }}</span>
@@ -170,7 +185,7 @@
         {{-- ── Breadcrumb strip ───────────────────────────────────── --}}
         <div class="breadcrumb-bar">
             <div class="breadcrumb">
-                <a href="{{ route('inicio') }}">Portal Acadêmico</a>
+                <a href="{{ route('inicio') }}">{{ auth()->user()->isAluno() ? 'Área do Aluno' : 'Portal Acadêmico' }}</a>
                 <span>/</span>
                 <strong>@yield('breadcrumb', 'Painel')</strong>
             </div>
@@ -183,7 +198,7 @@
 
         <footer class="site-footer">
             <div class="site-footer-inner">
-                <span>Sistema Escolar · Portal Acadêmico</span>
+                <span>Sistema Escolar · {{ auth()->user()->isAluno() ? 'Área do Aluno' : 'Portal Acadêmico' }}</span>
                 <span>© {{ now()->year }} · Todos os direitos reservados</span>
             </div>
         </footer>

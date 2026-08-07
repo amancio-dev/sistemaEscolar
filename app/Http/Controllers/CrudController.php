@@ -88,7 +88,7 @@ abstract class CrudController extends Controller
 
     public function store(Request $request): JsonResponse|RedirectResponse
     {
-        $validated = $request->validate($this->rules());
+        $validated = $request->validate($this->rules(), $this->messages(), $this->attributes());
         $modelClass = $this->modelClass;
 
         $record = DB::transaction(function () use ($validated, $modelClass): Model {
@@ -133,7 +133,7 @@ abstract class CrudController extends Controller
     {
         $modelClass = $this->modelClass;
         $record = $modelClass::query()->findOrFail($id);
-        $validated = $request->validate($this->rules($id));
+        $validated = $request->validate($this->rules($id), $this->messages(), $this->attributes());
 
         DB::transaction(function () use ($record, $validated): void {
             $record->update($this->prepareUpdate($validated, $record));
@@ -185,6 +185,18 @@ abstract class CrudController extends Controller
 
     /** @return array<string, mixed> */
     protected function formData(): array
+    {
+        return [];
+    }
+
+    /** @return array<string, string> */
+    protected function messages(): array
+    {
+        return [];
+    }
+
+    /** @return array<string, string> */
+    protected function attributes(): array
     {
         return [];
     }
