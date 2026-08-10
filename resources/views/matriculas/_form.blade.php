@@ -18,8 +18,11 @@
         <label class="field"><span>Turma <b>*</b></span><select name="turma_id" required>
                 <option value="">Selecione a turma</option>
                 @foreach ($turmas as $turma)
+                    @php($vagasDisponiveis = max(0, (int) $turma->limite_alunos - (int) $turma->matriculas_ativas_count))
                     <option value="{{ $turma->id_turma }}" @selected((string) old('turma_id', $record->turma_id ?? '') === (string) $turma->id_turma)>{{ $turma->nome }} ·
-                        {{ $turma->serie }}</option>
+                        {{ $turma->serie }} · {{ $turma->ano_letivo }} · {{ $vagasDisponiveis }}
+                        {{ $vagasDisponiveis === 1 ? 'vaga livre' : 'vagas livres' }} ·
+                        {{ ucfirst($turma->situacao) }}</option>
                 @endforeach
             </select>
         </label>

@@ -21,7 +21,7 @@
 
     <p class="eyebrow">Recuperação de acesso</p>
     <h1 class="auth-title">Esqueceu sua senha?</h1>
-    <p class="auth-subtitle">Informe o e-mail da sua conta institucional. Enviaremos um link seguro para você redefinir sua senha.</p>
+    <p class="auth-subtitle">Informe o e-mail da conta administrativa. Enviaremos um link seguro para redefinir sua senha.</p>
 
     <form class="auth-form" method="POST" action="{{ route('password.email') }}" novalidate>
         @csrf

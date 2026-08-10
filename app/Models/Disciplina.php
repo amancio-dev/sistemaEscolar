@@ -9,8 +9,11 @@ class Disciplina extends Model
 {
     //
     protected $table = 'disciplinas';
+
     protected $primaryKey = 'id_disciplina';
+
     public $incrementing = true;
+
     protected $keyType = 'int';
 
     protected $fillable = [
@@ -35,5 +38,10 @@ class Disciplina extends Model
     public function frequencias(): HasMany
     {
         return $this->hasMany(Frequencia::class, 'disciplina_id', 'id_disciplina');
+    }
+
+    public function alocacoes(): HasMany
+    {
+        return $this->hasMany(DisciplinaProfessor::class, 'disciplina_id', 'id_disciplina');
     }
 }

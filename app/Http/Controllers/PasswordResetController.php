@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -30,6 +31,15 @@ class PasswordResetController extends Controller
         ], [], [
             'email' => 'e-mail',
         ]);
+
+        $administratorExists = User::query()
+            ->where('email', $request->string('email')->toString())
+            ->where('tipo_usuario', 'administrador')
+            ->exists();
+
+        if (! $administratorExists) {
+            return back()->with('success', 'Se o e-mail informado estiver cadastrado, você receberá um link de redefinição.');
+        }
 
         $status = Password::sendResetLink($request->only('email'));
 
@@ -68,6 +78,17 @@ class PasswordResetController extends Controller
             'email' => 'e-mail',
             'password' => 'senha',
         ]);
+
+        $isAdministrator = User::query()
+            ->where('email', $request->string('email')->toString())
+            ->where('tipo_usuario', 'administrador')
+            ->exists();
+
+        if (! $isAdministrator) {
+            return back()
+                ->withErrors(['email' => 'Não foi possível redefinir a senha. O link pode ter expirado — solicite um novo.'])
+                ->onlyInput('email');
+        }
 
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),

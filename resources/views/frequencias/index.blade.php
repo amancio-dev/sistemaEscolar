@@ -5,8 +5,12 @@
 
 @section('content')
     <x-page-header eyebrow="ROTINA ACADÊMICA" title="Frequências"
-        description="Acompanhe presenças e faltas por aluno, período, turma e disciplina."
-        :action-route="route('frequencias.create')" action-label="Nova frequência" />
+        description="Acompanhe presenças e faltas por aluno, período, turma e disciplina.">
+        <x-slot:actions>
+            <a class="secondary-button" href="{{ route('frequencias.create') }}">Registro individual</a>
+            <a class="primary-button" href="{{ route('frequencias.chamada') }}">Fazer chamada</a>
+        </x-slot:actions>
+    </x-page-header>
 
     <section class="summary-cards attendance-summary" aria-label="Resumo dos registros filtrados">
         <article class="summary-card summary-card--rate">

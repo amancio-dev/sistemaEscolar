@@ -21,6 +21,10 @@ class DashboardController extends Controller
             return $this->painelDoAluno($request->user());
         }
 
+        if ($request->user()->tipo_usuario === 'professor') {
+            return $this->painelDoProfessor($request->user());
+        }
+
         $today = now()->toDateString();
 
         return view('dashboard.index', [
@@ -40,9 +44,9 @@ class DashboardController extends Controller
             'activeTurmas' => Turma::query()->where('situacao', 'ativa')->count(),
 
             'todayAttendance' => [
-                'presente' => Frequencia::query()->where('data_aula', $today)->where('situacao', 'presente')->count(),
-                'ausente' => Frequencia::query()->where('data_aula', $today)->where('situacao', 'ausente')->count(),
-                'total' => Frequencia::query()->where('data_aula', $today)->count(),
+                'presente' => Frequencia::query()->whereDate('data_aula', $today)->where('situacao', 'presente')->count(),
+                'ausente' => Frequencia::query()->whereDate('data_aula', $today)->where('situacao', 'ausente')->count(),
+                'total' => Frequencia::query()->whereDate('data_aula', $today)->count(),
             ],
 
             'gradeStats' => [
@@ -65,6 +69,52 @@ class DashboardController extends Controller
                 ->with(['aluno', 'turma'])
                 ->latest('id_matricula')
                 ->limit(5)
+                ->get(),
+        ]);
+    }
+
+    private function painelDoProfessor(User $user): View
+    {
+        $professor = $user->professor()->first();
+
+        if (! $professor) {
+            return view('dashboard.professor', [
+                'professor' => null,
+                'alocacoes' => collect(),
+                'turmasCount' => 0,
+                'alunosCount' => 0,
+                'notasCount' => 0,
+                'frequenciasHoje' => 0,
+                'recentAttendance' => collect(),
+            ]);
+        }
+
+        $alocacoes = $professor->alocacoes()
+            ->with(['turma', 'disciplina'])
+            ->whereHas('turma', fn ($query) => $query->where('situacao', 'ativa'))
+            ->whereHas('disciplina', fn ($query) => $query->where('situacao', 'ativa'))
+            ->get()
+            ->sortBy(fn ($alocacao): string => ($alocacao->turma?->nome ?? '').'|'.($alocacao->disciplina?->nome ?? ''))
+            ->values();
+
+        $turmaIds = $alocacoes->pluck('turma_id')->unique()->values();
+
+        return view('dashboard.professor', [
+            'professor' => $professor,
+            'alocacoes' => $alocacoes,
+            'turmasCount' => $turmaIds->count(),
+            'alunosCount' => Matricula::query()
+                ->whereIn('turma_id', $turmaIds)
+                ->where('situacao', 'ativa')
+                ->distinct()
+                ->count('aluno_id'),
+            'notasCount' => $professor->notas()->count(),
+            'frequenciasHoje' => $professor->frequencias()->whereDate('data_aula', today())->count(),
+            'recentAttendance' => $professor->frequencias()
+                ->with(['aluno', 'disciplina', 'turma'])
+                ->orderByDesc('data_aula')
+                ->orderByDesc('id_frequencia')
+                ->limit(6)
                 ->get(),
         ]);
     }

@@ -2,8 +2,9 @@
 @section('title', 'Turmas · Sistema Escolar')
 @section('breadcrumb', 'Turmas')
 @section('content')
-    <x-page-header eyebrow="ORGANIZAÇÃO ACADÊMICA" title="Turmas" description="Gerencie turmas, salas, turnos e responsáveis."
-        :action-route="route('turmas.create')" action-label="Nova turma" />
+    <x-page-header eyebrow="ORGANIZAÇÃO ACADÊMICA" title="Turmas" description="Consulte composição, capacidade, disciplinas e responsáveis."
+        :action-route="auth()->user()->tipo_usuario === 'administrador' ? route('turmas.create') : null"
+        action-label="Nova turma" />
     <section class="panel table-panel">
         <div class="table-toolbar">
             <form class="search-form" method="GET" action="{{ route('turmas.index') }}"><svg viewBox="0 0 24 24">
@@ -41,7 +42,13 @@
                             <td>{{ $turma->sala }}</td>
                             <td>{{ $turma->professorResponsavel?->nome ?? 'Não definido' }}</td>
                             <td><x-status :value="$turma->situacao" /></td>
-                            <td class="row-actions"><a class="icon-button" href="{{ route('turmas.edit', $turma) }}"
+                            <td class="row-actions">
+                                <a class="icon-button" href="{{ route('turmas.show', $turma) }}"
+                                    aria-label="Consultar {{ $turma->nome }}"><svg viewBox="0 0 24 24">
+                                        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Zm10 3a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                                    </svg></a>
+                                @if (auth()->user()->tipo_usuario === 'administrador')
+                                <a class="icon-button" href="{{ route('turmas.edit', $turma) }}"
                                     aria-label="Editar {{ $turma->nome }}"><svg viewBox="0 0 24 24">
                                         <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4L16.5 3.5Z" />
                                     </svg></a>
@@ -51,6 +58,7 @@
                                         aria-label="Excluir {{ $turma->nome }}"><svg viewBox="0 0 24 24">
                                             <path d="M3 6h18M8 6V4h8v2m3 0-1 15H6L5 6m4 4v7m6-7v7" />
                                         </svg></button></form>
+                                @endif
                             </td>
                         </tr>
                     @empty

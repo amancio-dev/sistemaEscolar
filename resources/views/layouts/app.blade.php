@@ -16,13 +16,14 @@
 </head>
 
 <body>
+    <a class="skip-link" href="#main-content">Ir para o conteúdo principal</a>
     <div class="app-shell">
 
         {{-- ── Institutional utility bar ─────────────────────────── --}}
         <div class="util-bar">
             <div class="util-bar-inner">
                 <span class="util-bar-item util-bar-brand">
-                    {{ auth()->user()->isAluno() ? 'Área do Aluno · Rede Federal de Ensino' : 'Portal Acadêmico · Rede Federal de Ensino' }}
+                    {{ auth()->user()->isAluno() ? 'Área do Aluno' : (auth()->user()->tipo_usuario === 'professor' ? 'Portal Docente' : 'Portal Acadêmico') }} · Rede Federal de Ensino
                 </span>
                 <div class="util-bar-right">
                     <span class="util-bar-item">Ano letivo {{ now()->year }}</span>
@@ -47,7 +48,7 @@
                     </span>
                     <span class="brand-text">
                         <strong>Sistema Escolar</strong>
-                        <small>{{ auth()->user()->isAluno() ? 'Área de Consulta do Aluno' : 'Gestão Acadêmica Integrada' }}</small>
+                        <small>{{ auth()->user()->isAluno() ? 'Área de Consulta do Aluno' : (auth()->user()->tipo_usuario === 'professor' ? 'Rotina e acompanhamento docente' : 'Gestão Acadêmica Integrada') }}</small>
                     </span>
                 </a>
 
@@ -75,6 +76,37 @@
                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" /></svg>
                             <span>Minha frequência</span>
                         </a>
+                    @elseif (auth()->user()->tipo_usuario === 'professor')
+                    <a class="nav-link {{ request()->routeIs('turmas.*') ? 'is-active' : '' }}"
+                        href="{{ route('turmas.index') }}">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18v16H3V4Zm0 5h18M8 4v16" /></svg>
+                        <span>Minhas turmas</span>
+                    </a>
+
+                    <div class="nav-item-group {{ request()->routeIs('notas.*', 'frequencias.*') ? 'is-active' : '' }}">
+                        <button class="nav-link nav-link--toggle" type="button" aria-haspopup="true" aria-expanded="false">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11 12 14 22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
+                            <span>Rotina Docente</span>
+                            <svg class="nav-caret" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+                        </button>
+                        <div class="nav-dropdown">
+                            <a class="nav-dropdown-item {{ request()->routeIs('frequencias.chamada*') ? 'is-active' : '' }}"
+                                href="{{ route('frequencias.chamada') }}">
+                                <strong>Fazer chamada</strong>
+                                <small>Registrar a turma de uma só vez</small>
+                            </a>
+                            <a class="nav-dropdown-item {{ request()->routeIs('notas.*') ? 'is-active' : '' }}"
+                                href="{{ route('notas.index') }}">
+                                <strong>Notas</strong>
+                                <small>Avaliações e desempenho</small>
+                            </a>
+                            <a class="nav-dropdown-item {{ request()->routeIs('frequencias.*') && ! request()->routeIs('frequencias.chamada*') ? 'is-active' : '' }}"
+                                href="{{ route('frequencias.index') }}">
+                                <strong>Frequências</strong>
+                                <small>Histórico de presença</small>
+                            </a>
+                        </div>
+                    </div>
                     @else
                     <div class="nav-item-group {{ request()->routeIs('alunos.*', 'professores.*') ? 'is-active' : '' }}">
                         <button class="nav-link nav-link--toggle" type="button" aria-haspopup="true" aria-expanded="false">
@@ -94,7 +126,7 @@
                         </div>
                     </div>
 
-                    <div class="nav-item-group {{ request()->routeIs('turmas.*', 'disciplinas.*') ? 'is-active' : '' }}">
+                    <div class="nav-item-group {{ request()->routeIs('turmas.*', 'disciplinas.*', 'alocacoes.*') ? 'is-active' : '' }}">
                         <button class="nav-link nav-link--toggle" type="button" aria-haspopup="true" aria-expanded="false">
                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18v16H3V4Zm0 5h18M8 4v16" /></svg>
                             <span>Organização Acadêmica</span>
@@ -108,6 +140,10 @@
                             <a class="nav-dropdown-item {{ request()->routeIs('disciplinas.*') ? 'is-active' : '' }}" href="{{ route('disciplinas.index') }}">
                                 <strong>Disciplinas</strong>
                                 <small>Componentes curriculares</small>
+                            </a>
+                            <a class="nav-dropdown-item {{ request()->routeIs('alocacoes.*') ? 'is-active' : '' }}" href="{{ route('alocacoes.index') }}">
+                                <strong>Alocações docentes</strong>
+                                <small>Professor, disciplina e turma</small>
                             </a>
                         </div>
                     </div>
@@ -127,9 +163,13 @@
                                 <strong>Notas</strong>
                                 <small>Avaliações e desempenho</small>
                             </a>
-                            <a class="nav-dropdown-item {{ request()->routeIs('frequencias.*') ? 'is-active' : '' }}" href="{{ route('frequencias.index') }}">
+                            <a class="nav-dropdown-item {{ request()->routeIs('frequencias.chamada*') ? 'is-active' : '' }}" href="{{ route('frequencias.chamada') }}">
+                                <strong>Fazer chamada</strong>
+                                <small>Registrar uma turma em lote</small>
+                            </a>
+                            <a class="nav-dropdown-item {{ request()->routeIs('frequencias.*') && ! request()->routeIs('frequencias.chamada*') ? 'is-active' : '' }}" href="{{ route('frequencias.index') }}">
                                 <strong>Frequências</strong>
-                                <small>Controle de presença</small>
+                                <small>Histórico de presença</small>
                             </a>
                         </div>
                     </div>
@@ -154,12 +194,15 @@
                     </div>
                 </nav>
 
-                <div class="topbar-profile" aria-label="Usuário atual">
-                    <span class="profile-avatar">{{ Illuminate\Support\Str::of(auth()->user()->name)->explode(' ')->map(fn ($p) => mb_substr($p, 0, 1))->take(2)->implode('') }}</span>
-                    <span><strong>{{ auth()->user()->name }}</strong><small>{{ ucfirst(auth()->user()->tipo_usuario) }}</small></span>
-                    <svg class="nav-caret" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+                <div class="topbar-profile">
+                    <button class="topbar-profile-trigger" type="button" aria-label="Abrir menu do usuário"
+                        aria-expanded="false" aria-controls="profile-dropdown">
+                        <span class="profile-avatar">{{ Illuminate\Support\Str::of(auth()->user()->name)->explode(' ')->map(fn ($p) => mb_substr($p, 0, 1))->take(2)->implode('') }}</span>
+                        <span><strong>{{ auth()->user()->name }}</strong><small>{{ ucfirst(auth()->user()->tipo_usuario) }}</small></span>
+                        <svg class="nav-caret" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+                    </button>
 
-                    <div class="profile-dropdown">
+                    <div class="profile-dropdown" id="profile-dropdown">
                         <div class="profile-dropdown-header">
                             <strong>{{ auth()->user()->name }}</strong>
                             <small>{{ auth()->user()->email }}</small>
@@ -184,21 +227,21 @@
 
         {{-- ── Breadcrumb strip ───────────────────────────────────── --}}
         <div class="breadcrumb-bar">
-            <div class="breadcrumb">
-                <a href="{{ route('inicio') }}">{{ auth()->user()->isAluno() ? 'Área do Aluno' : 'Portal Acadêmico' }}</a>
+            <nav class="breadcrumb" aria-label="Trilha de navegação">
+                <a href="{{ route('inicio') }}">{{ auth()->user()->isAluno() ? 'Área do Aluno' : (auth()->user()->tipo_usuario === 'professor' ? 'Portal Docente' : 'Portal Acadêmico') }}</a>
                 <span>/</span>
                 <strong>@yield('breadcrumb', 'Painel')</strong>
-            </div>
+            </nav>
         </div>
 
-        <main class="content">
+        <main class="content" id="main-content" tabindex="-1">
             @include('components.flash')
             @yield('content')
         </main>
 
         <footer class="site-footer">
             <div class="site-footer-inner">
-                <span>Sistema Escolar · {{ auth()->user()->isAluno() ? 'Área do Aluno' : 'Portal Acadêmico' }}</span>
+                <span>Sistema Escolar · {{ auth()->user()->isAluno() ? 'Área do Aluno' : (auth()->user()->tipo_usuario === 'professor' ? 'Portal Docente' : 'Portal Acadêmico') }}</span>
                 <span>© {{ now()->year }} · Todos os direitos reservados</span>
             </div>
         </footer>

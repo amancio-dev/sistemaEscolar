@@ -2,15 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\FrequenciaResource;
 use App\Models\Aluno;
 use App\Models\Disciplina;
+use App\Models\DisciplinaProfessor;
 use App\Models\Frequencia;
+use App\Models\Matricula;
 use App\Models\Professor;
 use App\Models\Turma;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class FrequenciaController extends CrudController
@@ -26,6 +32,8 @@ class FrequenciaController extends CrudController
     protected string $pluralLabel = 'Registros de frequências';
 
     protected string $resource = 'frequencias';
+
+    protected ?string $apiResourceClass = FrequenciaResource::class;
 
     protected array $with = ['aluno', 'disciplina', 'turma', 'professor'];
 
@@ -50,6 +58,7 @@ class FrequenciaController extends CrudController
         ];
 
         $query = Frequencia::query()->with($this->with);
+        $this->applyIndexScope($query, $request);
         $this->aplicarFiltros($query, $filters);
 
         $totals = (clone $query)
@@ -85,7 +94,7 @@ class FrequenciaController extends CrudController
         if ($this->isApiRequest($request)) {
             return response()->json([
                 'message' => "{$this->pluralLabel} listados com sucesso.",
-                'data' => $records,
+                'data' => $this->apiPage($records, $request),
                 'resumo' => $totals,
             ]);
         }
@@ -109,11 +118,21 @@ class FrequenciaController extends CrudController
     {
         $prefix = $id === null ? 'required' : 'sometimes';
 
-        $registroUnico = Rule::unique('frequencias', 'data_aula')
-            ->where(fn ($query) => $query
-                ->where('aluno_id', request('aluno_id'))
-                ->where('disciplina_id', request('disciplina_id')))
-            ->ignore($id, 'id_frequencia');
+        $registroUnico = function (string $attribute, mixed $value, \Closure $fail) use ($id): void {
+            $query = DB::table('frequencias')
+                ->where('aluno_id', request()->integer('aluno_id'))
+                ->where('disciplina_id', request()->integer('disciplina_id'))
+                ->where('turma_id', request()->integer('turma_id'))
+                ->whereDate('data_aula', (string) $value);
+
+            if ($id !== null) {
+                $query->where('id_frequencia', '!=', $id);
+            }
+
+            if ($query->exists()) {
+                $fail('Já existe uma frequência para este aluno, disciplina e data.');
+            }
+        };
 
         return [
             'aluno_id' => [$prefix, 'integer', 'exists:alunos,id_aluno'],
@@ -128,12 +147,77 @@ class FrequenciaController extends CrudController
 
     protected function formData(): array
     {
+        if (request()->user()?->tipo_usuario === 'professor') {
+            $professor = request()->user()->professor;
+            $alocacoes = $professor?->alocacoes()->get() ?? collect();
+            $turmaIds = $alocacoes->pluck('turma_id')->unique();
+
+            return [
+                'alunos' => Aluno::query()
+                    ->whereHas('matriculas', fn (Builder $query) => $query
+                        ->whereIn('turma_id', $turmaIds)
+                        ->where('situacao', 'ativa'))
+                    ->orderBy('nome')
+                    ->get(),
+                'disciplinas' => Disciplina::query()
+                    ->whereIn('id_disciplina', $alocacoes->pluck('disciplina_id'))
+                    ->orderBy('nome')
+                    ->get(),
+                'turmas' => Turma::query()
+                    ->whereIn('id_turma', $turmaIds)
+                    ->orderBy('nome')
+                    ->get(),
+                'professores' => $professor ? collect([$professor]) : collect(),
+            ];
+        }
+
         return [
             'alunos' => Aluno::query()->orderBy('nome')->get(),
             'disciplinas' => Disciplina::query()->orderBy('nome')->get(),
             'turmas' => Turma::query()->orderBy('nome')->get(),
             'professores' => Professor::query()->orderBy('nome')->get(),
         ];
+    }
+
+    /** @param array<string, mixed> $validated */
+    protected function prepareCreate(array $validated): array
+    {
+        $this->validarVinculosAcademicos($validated);
+
+        return $validated;
+    }
+
+    /** @param array<string, mixed> $validated */
+    protected function prepareUpdate(array $validated, Model $record): array
+    {
+        $this->validarVinculosAcademicos(array_replace($record->only([
+            'aluno_id',
+            'disciplina_id',
+            'turma_id',
+            'professor_id',
+            'data_aula',
+        ]), $validated), (int) $record->getKey());
+
+        return $validated;
+    }
+
+    protected function applyIndexScope(Builder $query, Request $request): void
+    {
+        if ($request->user()?->tipo_usuario === 'professor') {
+            $query->whereHas('professor', fn (Builder $query) => $query
+                ->where('user_id', $request->user()->getKey()));
+        }
+    }
+
+    protected function authorizeRecord(Request $request, Model $record): void
+    {
+        if ($request->user()?->tipo_usuario === 'professor') {
+            abort_unless(
+                (int) $record->professor_id === (int) $request->user()->professor?->getKey(),
+                403,
+                'Você só pode gerenciar seus próprios registros de frequência.',
+            );
+        }
     }
 
     protected function messages(): array
@@ -156,6 +240,55 @@ class FrequenciaController extends CrudController
             'situacao' => 'situação',
             'justificativa' => 'justificativa',
         ];
+    }
+
+    /** @param array<string, mixed> $attributes */
+    private function validarVinculosAcademicos(array $attributes, ?int $id = null): void
+    {
+        $errors = [];
+
+        $matriculado = Matricula::query()
+            ->where('aluno_id', $attributes['aluno_id'])
+            ->where('turma_id', $attributes['turma_id'])
+            ->where('situacao', 'ativa')
+            ->exists();
+
+        if (! $matriculado) {
+            $errors['aluno_id'][] = 'O aluno precisa ter matrícula ativa na turma selecionada.';
+        }
+
+        $alocacao = DisciplinaProfessor::query()
+            ->where('professor_id', $attributes['professor_id'])
+            ->where('disciplina_id', $attributes['disciplina_id'])
+            ->where('turma_id', $attributes['turma_id'])
+            ->lockForUpdate()
+            ->first();
+
+        if (! $alocacao) {
+            $errors['professor_id'][] = 'O professor não está alocado nesta disciplina e turma.';
+        }
+
+        $user = request()->user();
+        if ($user?->tipo_usuario === 'professor'
+            && (int) $user->professor?->getKey() !== (int) $attributes['professor_id']) {
+            $errors['professor_id'][] = 'Você só pode registrar frequências em seu próprio nome.';
+        }
+
+        $duplicada = Frequencia::query()
+            ->where('aluno_id', $attributes['aluno_id'])
+            ->where('disciplina_id', $attributes['disciplina_id'])
+            ->where('turma_id', $attributes['turma_id'])
+            ->whereDate('data_aula', $attributes['data_aula'])
+            ->when($id !== null, fn (Builder $query) => $query->where('id_frequencia', '!=', $id))
+            ->exists();
+
+        if ($duplicada) {
+            $errors['data_aula'][] = 'Já existe uma frequência para este aluno, disciplina e data.';
+        }
+
+        if ($errors !== []) {
+            throw ValidationException::withMessages($errors);
+        }
     }
 
     /** @param array<string, int|string> $filters */

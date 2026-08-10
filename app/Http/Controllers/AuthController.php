@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -22,22 +23,12 @@ class AuthController extends Controller
     /**
      * Handle a login attempt.
      */
-    public function login(Request $request): RedirectResponse
+    public function login(LoginRequest $request): RedirectResponse
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'string', 'email'],
-            'password' => ['required', 'string'],
-        ], [], [
-            'email' => 'e-mail',
-            'password' => 'senha',
-        ]);
-
-        $remember = $request->boolean('remember');
-
-        if (! Auth::attempt($credentials, $remember)) {
+        if (! $this->attemptLogin($request)) {
             return back()
-                ->withErrors(['email' => 'E-mail ou senha incorretos.'])
-                ->onlyInput('email');
+                ->withErrors(['email' => 'E-mail, credencial ou perfil incorretos.'])
+                ->onlyInput('email', 'tipo_usuario', 'remember');
         }
 
         $request->session()->regenerate();
@@ -51,11 +42,63 @@ class AuthController extends Controller
 
             return back()
                 ->withErrors(['email' => 'Este cadastro está inativo. Procure a secretaria acadêmica.'])
-                ->onlyInput('email');
+                ->onlyInput('email', 'tipo_usuario', 'remember');
         }
 
         return redirect()->intended(route('inicio'))
             ->with('success', 'Bem-vindo(a) de volta, '.$user->name.'!');
+    }
+
+    private function attemptLogin(LoginRequest $request): bool
+    {
+        if ($request->userType() === 'administrador') {
+            return Auth::attempt([
+                'email' => $request->string('email')->toString(),
+                'password' => (string) $request->input('password'),
+                'tipo_usuario' => 'administrador',
+            ], $request->boolean('remember'));
+        }
+
+        $userType = $request->userType();
+        $submittedEmail = $request->string('email')->toString();
+
+        $user = User::query()
+            ->with($userType)
+            ->where('tipo_usuario', $userType)
+            ->where('email', $submittedEmail)
+            ->first();
+
+        $user ??= User::query()
+            ->with($userType)
+            ->where('tipo_usuario', $userType)
+            ->whereHas($userType, fn ($relation) => $relation->where('email', $submittedEmail))
+            ->first();
+
+        $registeredCpf = $user?->{$userType}?->cpf ?? $user?->cpf;
+        $registeredCpfDigits = preg_replace('/\D/', '', (string) $registeredCpf);
+
+        if (! $user || strlen($registeredCpfDigits) !== 11
+            || ! hash_equals($registeredCpfDigits, $request->cpfDigits())) {
+            return false;
+        }
+
+        if ($user->situacao !== 'ativo') {
+            Auth::login($user);
+
+            return true;
+        }
+
+        $credentials = [
+            'email' => $user->email,
+            'password' => $request->cpfDigits(),
+            'tipo_usuario' => $userType,
+        ];
+
+        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

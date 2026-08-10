@@ -10,8 +10,11 @@ class Turma extends Model
 {
     //
     protected $table = 'turmas';
+
     protected $primaryKey = 'id_turma';
+
     public $incrementing = true;
+
     protected $keyType = 'int';
 
     protected $fillable = [
@@ -43,5 +46,10 @@ class Turma extends Model
     public function frequencias(): HasMany
     {
         return $this->hasMany(Frequencia::class, 'turma_id', 'id_turma');
+    }
+
+    public function alocacoes(): HasMany
+    {
+        return $this->hasMany(DisciplinaProfessor::class, 'turma_id', 'id_turma');
     }
 }

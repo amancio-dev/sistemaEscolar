@@ -10,8 +10,11 @@ class Professor extends Model
 {
     //
     protected $table = 'professores';
+
     protected $primaryKey = 'id_professor';
+
     public $incrementing = true;
+
     protected $keyType = 'int';
 
     protected $fillable = [
@@ -50,5 +53,10 @@ class Professor extends Model
     public function frequencias(): HasMany
     {
         return $this->hasMany(Frequencia::class, 'professor_id', 'id_professor');
+    }
+
+    public function alocacoes(): HasMany
+    {
+        return $this->hasMany(DisciplinaProfessor::class, 'professor_id', 'id_professor');
     }
 }

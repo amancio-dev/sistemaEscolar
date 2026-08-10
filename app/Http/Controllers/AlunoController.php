@@ -33,16 +33,41 @@ class AlunoController extends CrudController
             ]);
         }
 
+        $linkedUserId = request()->integer('user_id') ?: ($id
+            ? Aluno::query()->whereKey($id)->value('user_id')
+            : User::query()
+                ->where('tipo_usuario', 'aluno')
+                ->whereDoesntHave('aluno')
+                ->where('cpf', request('cpf'))
+                ->value('id'));
+
         $prefix = $id === null ? 'required' : 'sometimes';
 
         return [
             'nome' => [$prefix, 'string', 'max:255'],
             'numero_matricula' => [$prefix, 'string', 'max:255', Rule::unique('alunos', 'numero_matricula')->ignore($id, 'id_aluno')],
-            'user_id' => ['nullable', 'integer', 'exists:users,id', Rule::unique('alunos', 'user_id')->ignore($id, 'id_aluno')],
-            'cpf' => [$prefix, 'string', 'max:14', Rule::unique('alunos', 'cpf')->ignore($id, 'id_aluno')],
+            'user_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('users', 'id')->where('tipo_usuario', 'aluno'),
+                Rule::unique('alunos', 'user_id')->ignore($id, 'id_aluno'),
+            ],
+            'cpf' => [
+                $prefix,
+                'string',
+                'regex:/^\d{3}\.\d{3}\.\d{3}-\d{2}$/',
+                Rule::unique('alunos', 'cpf')->ignore($id, 'id_aluno'),
+                Rule::unique('users', 'cpf')->ignore($linkedUserId),
+            ],
             'data_nascimento' => [$prefix, 'date', 'before:today'],
             'telefone' => ['nullable', 'string', 'max:20'],
-            'email' => ['nullable', 'email', 'max:255', Rule::unique('alunos', 'email')->ignore($id, 'id_aluno')],
+            'email' => [
+                'nullable',
+                'email',
+                'max:255',
+                Rule::unique('alunos', 'email')->ignore($id, 'id_aluno'),
+                Rule::unique('users', 'email')->ignore($linkedUserId),
+            ],
             'endereco' => ['nullable', 'string'],
             'nome_responsavel' => ['nullable', 'string', 'max:255'],
             'telefone_responsavel' => ['nullable', 'string', 'max:20'],
@@ -62,13 +87,7 @@ class AlunoController extends CrudController
             $user = User::query()
                 ->where('tipo_usuario', 'aluno')
                 ->whereDoesntHave('aluno')
-                ->where(function ($query) use ($email, $validated): void {
-                    $query->where('cpf', $validated['cpf']);
-
-                    if ($email) {
-                        $query->orWhere('email', $email);
-                    }
-                })
+                ->where('cpf', $validated['cpf'])
                 ->first();
 
             if (! $user) {
@@ -76,14 +95,10 @@ class AlunoController extends CrudController
                 $accountEmail = $email && ! User::query()->where('email', $email)->exists()
                     ? $email
                     : "aluno.{$account}@sistema.local";
-                $accountCpf = User::query()->where('cpf', $validated['cpf'])->exists()
-                    ? null
-                    : $validated['cpf'];
-
                 $user = User::create([
                     'name' => $validated['nome'],
                     'email' => $accountEmail,
-                    'cpf' => $accountCpf,
+                    'cpf' => $validated['cpf'],
                     'password' => Hash::make($cpfDigits),
                     'tipo_usuario' => 'aluno',
                     'situacao' => $accountStatus,
@@ -91,20 +106,43 @@ class AlunoController extends CrudController
             } else {
                 $user->update([
                     'name' => $validated['nome'],
+                    'email' => $email ?: $user->email,
+                    'cpf' => $validated['cpf'],
+                    'password' => $cpfDigits,
                     'situacao' => $accountStatus,
                 ]);
             }
 
             $validated['user_id'] = $user->id;
+        } else {
+            $user = User::query()->findOrFail($validated['user_id']);
+
+            $user->update([
+                'name' => $validated['nome'],
+                'email' => ($validated['email'] ?? null) ?: $user->email,
+                'cpf' => $validated['cpf'],
+                'password' => preg_replace('/\D/', '', $validated['cpf']),
+                'situacao' => ($validated['situacao'] ?? 'ativo') === 'ativo' ? 'ativo' : 'inativo',
+            ]);
         }
 
         return $validated;
+    }
+
+    protected function messages(): array
+    {
+        return [
+            'cpf.regex' => 'Informe um CPF válido, no formato 000.000.000-00.',
+        ];
     }
 
     protected function afterUpdate(Model $record): void
     {
         User::query()->whereKey($record->user_id)->update([
             'name' => $record->nome,
+            'email' => $record->email ?: $record->user?->email,
+            'cpf' => $record->cpf,
+            'password' => Hash::make((string) preg_replace('/\D/', '', $record->cpf)),
             'situacao' => $record->situacao === 'ativo' ? 'ativo' : 'inativo',
         ]);
     }

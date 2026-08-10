@@ -229,13 +229,13 @@
                         </span>
                         <svg class="quick-action-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
                     </a>
-                    <a class="quick-action" href="{{ route('frequencias.create') }}">
+                    <a class="quick-action" href="{{ route('frequencias.chamada') }}">
                         <span class="quick-action-icon quick-action-icon--emerald">
                             <svg viewBox="0 0 24 24"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" /></svg>
                         </span>
                         <span class="quick-action-text">
-                            <strong>Registrar frequência</strong>
-                            <small>Presença de alunos</small>
+                            <strong>Fazer chamada</strong>
+                            <small>Registrar a turma em lote</small>
                         </span>
                         <svg class="quick-action-arrow" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
                     </a>

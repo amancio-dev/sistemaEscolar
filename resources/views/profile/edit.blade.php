@@ -8,7 +8,7 @@
         <div>
             <p class="eyebrow">MINHA CONTA</p>
             <h1>Meu perfil</h1>
-            <p class="page-description">Atualize seus dados pessoais e mantenha sua senha segura.</p>
+            <p class="page-description">Atualize seus dados pessoais e consulte suas credenciais de acesso.</p>
         </div>
     </section>
 
@@ -64,58 +64,72 @@
                 </div>
             </section>
 
-            <section class="panel record-form">
-                <div class="form-section">
-                    <div class="form-section-heading">
-                        <span>2</span>
-                        <div>
-                            <h2>Segurança</h2>
-                            <p>Altere sua senha periodicamente para manter sua conta protegida.</p>
+            @if ($user->tipo_usuario === 'administrador')
+                <section class="panel record-form">
+                    <div class="form-section">
+                        <div class="form-section-heading">
+                            <span>2</span>
+                            <div>
+                                <h2>Segurança</h2>
+                                <p>Altere sua senha periodicamente para manter sua conta protegida.</p>
+                            </div>
                         </div>
+
+                        <form id="form-password" method="POST" action="{{ route('profile.password') }}" novalidate>
+                            @csrf
+                            @method('PUT')
+
+                            <div class="form-grid">
+                                <div class="field field-full">
+                                    <label for="current_password">Senha atual <b>*</b></label>
+                                    <div class="auth-password-field">
+                                        <input type="password" id="current_password" name="current_password" placeholder="Sua senha atual" required autocomplete="current-password">
+                                        <button type="button" class="auth-password-toggle" data-toggle-password="current_password" aria-label="Mostrar senha">
+                                            <svg viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" /><circle cx="12" cy="12" r="3" /></svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="field">
+                                    <label for="password">Nova senha <b>*</b></label>
+                                    <div class="auth-password-field">
+                                        <input type="password" id="password" name="password" placeholder="Mínimo 8 caracteres" required autocomplete="new-password">
+                                        <button type="button" class="auth-password-toggle" data-toggle-password="password" aria-label="Mostrar senha">
+                                            <svg viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" /><circle cx="12" cy="12" r="3" /></svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="field">
+                                    <label for="password_confirmation">Confirmar nova senha <b>*</b></label>
+                                    <div class="auth-password-field">
+                                        <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Repita a nova senha" required autocomplete="new-password">
+                                        <button type="button" class="auth-password-toggle" data-toggle-password="password_confirmation" aria-label="Mostrar senha">
+                                            <svg viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" /><circle cx="12" cy="12" r="3" /></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
 
-                    <form id="form-password" method="POST" action="{{ route('profile.password') }}" novalidate>
-                        @csrf
-                        @method('PUT')
-
-                        <div class="form-grid">
-                            <div class="field field-full">
-                                <label for="current_password">Senha atual <b>*</b></label>
-                                <div class="auth-password-field">
-                                    <input type="password" id="current_password" name="current_password" placeholder="Sua senha atual" required autocomplete="current-password">
-                                    <button type="button" class="auth-password-toggle" data-toggle-password="current_password" aria-label="Mostrar senha">
-                                        <svg viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" /><circle cx="12" cy="12" r="3" /></svg>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="field">
-                                <label for="password">Nova senha <b>*</b></label>
-                                <div class="auth-password-field">
-                                    <input type="password" id="password" name="password" placeholder="Mínimo 8 caracteres" required autocomplete="new-password">
-                                    <button type="button" class="auth-password-toggle" data-toggle-password="password" aria-label="Mostrar senha">
-                                        <svg viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" /><circle cx="12" cy="12" r="3" /></svg>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="field">
-                                <label for="password_confirmation">Confirmar nova senha <b>*</b></label>
-                                <div class="auth-password-field">
-                                    <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Repita a nova senha" required autocomplete="new-password">
-                                    <button type="button" class="auth-password-toggle" data-toggle-password="password_confirmation" aria-label="Mostrar senha">
-                                        <svg viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" /><circle cx="12" cy="12" r="3" /></svg>
-                                    </button>
-                                </div>
+                    <div class="form-actions">
+                        <button type="submit" form="form-password" class="primary-button">Alterar senha</button>
+                    </div>
+                </section>
+            @else
+                <section class="panel record-form">
+                    <div class="form-section">
+                        <div class="form-section-heading">
+                            <span>2</span>
+                            <div>
+                                <h2>Credencial de acesso</h2>
+                                <p>Para seu perfil, o CPF cadastrado é a credencial de acesso e não pode ser alterado nesta página.</p>
                             </div>
                         </div>
-                    </form>
-                </div>
-
-                <div class="form-actions">
-                    <button type="submit" form="form-password" class="primary-button">Alterar senha</button>
-                </div>
-            </section>
+                    </div>
+                </section>
+            @endif
         </div>
     </div>
 @endsection

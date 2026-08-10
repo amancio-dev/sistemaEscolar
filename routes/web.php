@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\AlocacaoController;
 use App\Http\Controllers\AlunoController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ChamadaEmLoteController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DisciplinaController;
 use App\Http\Controllers\FrequenciaController;
@@ -16,7 +18,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
     Route::get('/entrar', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/entrar', [AuthController::class, 'login'])->name('login.store');
+    Route::post('/entrar', [AuthController::class, 'login'])
+        ->middleware('throttle:login')
+        ->name('login.store');
     Route::get('/cadastrar', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/cadastrar', [AuthController::class, 'register'])->name('register.store');
 
@@ -30,7 +34,7 @@ Route::post('/sair', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'active'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('inicio');
 
     Route::get('/perfil', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -43,14 +47,29 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::middleware('role:administrador,professor')->group(function () {
+        Route::get('/frequencias/chamada', [ChamadaEmLoteController::class, 'create'])
+            ->name('frequencias.chamada');
+        Route::post('/frequencias/chamada', [ChamadaEmLoteController::class, 'store'])
+            ->name('frequencias.chamada.store');
+        Route::get('/turmas/{turma}', [TurmaController::class, 'show'])
+            ->whereNumber('turma')
+            ->name('turmas.show');
+        Route::get('/turmas', [TurmaController::class, 'index'])->name('turmas.index');
+
+        Route::resources([
+            'notas' => NotaController::class,
+            'frequencias' => FrequenciaController::class,
+        ], ['except' => ['show']]);
+    });
+
+    Route::middleware('role:administrador')->group(function () {
+        Route::resource('turmas', TurmaController::class)->except(['index', 'show']);
         Route::resources([
             'alunos' => AlunoController::class,
             'professores' => ProfessorController::class,
-            'turmas' => TurmaController::class,
             'disciplinas' => DisciplinaController::class,
+            'alocacoes' => AlocacaoController::class,
             'matriculas' => MatriculaController::class,
-            'notas' => NotaController::class,
-            'frequencias' => FrequenciaController::class,
         ], ['except' => ['show']]);
     });
 });

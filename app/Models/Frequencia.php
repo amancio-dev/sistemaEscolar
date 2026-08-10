@@ -2,15 +2,20 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 class Frequencia extends Model
 {
     //
     protected $table = 'frequencias';
+
     protected $primaryKey = 'id_frequencia';
+
     public $incrementing = true;
+
     protected $keyType = 'int';
 
     protected $fillable = [
@@ -26,6 +31,13 @@ class Frequencia extends Model
     protected function casts(): array
     {
         return ['data_aula' => 'date'];
+    }
+
+    protected function dataAula(): Attribute
+    {
+        return Attribute::make(
+            set: fn (mixed $value): string => Carbon::parse($value)->toDateString(),
+        );
     }
 
     public function aluno(): BelongsTo
