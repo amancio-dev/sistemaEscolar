@@ -1,6 +1,10 @@
+![Sistema Escolar — Amancio.dev](.github/assets/banner.svg)
+
 # Sistema Escolar
 
 Sistema acadêmico desenvolvido com Laravel 13, PHP e JavaScript. A interface administrativa permite gerenciar alunos, professores, turmas, disciplinas, matrículas, notas e frequências.
+
+[Recursos](#principais-recursos) · [Perfis de acesso](#perfis-de-acesso) · [Instalação](#instalação) · [Estrutura](#estrutura-da-interface)
 
 ## Principais recursos
 
