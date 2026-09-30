@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-labelledby="title desc">
+<title id="title">Sistema Escolar</title><desc id="desc">Gestão acadêmica em uma interface integrada</desc>
+<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#0f172a"/><stop offset="1" stop-color="#020617"/></linearGradient><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#94a3b8" stroke-opacity=".07"/></pattern></defs>
+<rect width="1200" height="320" rx="20" fill="url(#bg)"/><rect width="1200" height="320" rx="20" fill="url(#grid)"/>
+<rect x="48" y="48" width="36" height="4" rx="2" fill="#fb7185"/>
+<text x="98" y="56" fill="#94a3b8" font-family="monospace" font-size="14" letter-spacing="3">AMANCIO.DEV</text>
+<text x="48" y="145" fill="#f8fafc" font-family="Arial,sans-serif" font-size="52" font-weight="700">Sistema Escolar</text>
+<text x="50" y="192" fill="#cbd5e1" font-family="Arial,sans-serif" font-size="23">Gestão acadêmica em uma interface integrada</text>
+<text x="50" y="262" fill="#fb7185" font-family="monospace" font-size="15" letter-spacing="2">LARAVEL / PHP / JAVASCRIPT</text>
+<circle cx="1080" cy="154" r="88" fill="none" stroke="#fb7185" stroke-opacity=".25"/><circle cx="1080" cy="154" r="62" fill="none" stroke="#fb7185" stroke-opacity=".12"/>
+<text x="1026" y="173" fill="#fb7185" font-family="monospace" font-size="48">&lt;/&gt;</text></svg>
