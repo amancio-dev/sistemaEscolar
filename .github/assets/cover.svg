@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="240" viewBox="0 0 1200 240" role="img" aria-labelledby="title desc">
+  <title id="title">Escolar — Matrículas, notas e frequência</title>
+  <desc id="desc">Identidade visual de André Amancio em azul escuro, ciano e violeta, com formas de circuitos.</desc>
+  <defs>
+    <linearGradient id="base" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#08111e"/><stop offset="1" stop-color="#10182b"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#75e0ca"/><stop offset="1" stop-color="#779eff"/>
+    </linearGradient>
+    <radialGradient id="halo"><stop stop-color="#75e0ca" stop-opacity=".13"/><stop offset="1" stop-color="#75e0ca" stop-opacity="0"/></radialGradient>
+    <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M30 0H0V30" fill="none" stroke="#9eb2d2" stroke-opacity=".07" stroke-width="1"/></pattern>
+    </defs>
+  <rect width="1200" height="240" rx="22" fill="url(#base)"/>
+    <rect x=".5" y=".5" width="1199" height="239" rx="21.5" fill="none" stroke="#28344d"/>
+    <rect x="756" y="1" width="443" height="238" rx="21" fill="url(#grid)"/>
+    <ellipse cx="1040" cy="139.2" rx="330" ry="240" fill="url(#halo)"/>
+    <path d="M24 32V208" stroke="url(#accent)" stroke-width="3" stroke-linecap="round"/>
+    <path d="M940 239H1176" stroke="#75e0ca" stroke-opacity=".28"/>
+    <path d="M764 35h56l21 21h50M769 205h49l23-23h52M1116 49h29v32M1111 200h34v-28" fill="none" stroke="#75e0ca" stroke-opacity=".33" stroke-width="1.5"/>
+    <circle cx="891" cy="56" r="3" fill="#75e0ca"/><circle cx="893" cy="182" r="3" fill="#779eff"/>
+    <rect x="76" y="34" width="75" height="28" rx="14" fill="#18243a" stroke="#75e0ca" stroke-opacity=".22"/>
+    <text x="113.5" y="54" fill="#aebed6" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="700" text-anchor="middle" letter-spacing="1">PROJETO</text><text x="75" y="128" fill="#f6f8ff" font-family="DejaVu Sans, Arial, sans-serif" font-size="60" font-weight="700" letter-spacing="-1.7">Escolar</text><text x="78" y="175" fill="#c9d5e8" font-family="DejaVu Sans, Arial, sans-serif" font-size="24" font-weight="400" letter-spacing="-.25">Matrículas, notas e frequência</text><rect x="78" y="197" width="60" height="3" rx="1.5" fill="url(#accent)"/><text x="1123" y="219" fill="#8195b4" font-family="DejaVu Sans, Arial, sans-serif" font-size="18" font-weight="600" text-anchor="end" letter-spacing="2">03</text><circle cx="1018" cy="119" r="92" fill="none" stroke="#75e0ca" stroke-opacity=".08"/>
+    <rect x="924" y="48" width="187" height="141" rx="16" fill="#101d31" stroke="url(#accent)" stroke-width="1.5"/>
+    <path d="M925 79h185" stroke="#75e0ca" stroke-opacity=".25"/>
+    <circle cx="941" cy="64" r="3" fill="#75e0ca"/><circle cx="953" cy="64" r="3" fill="#779eff"/>
+    <circle cx="965" cy="64" r="3" fill="#4a5971"/>
+    <path d="M948 103c12-4 23-4 35 1 12-5 23-5 35-1v50c-12-4-23-4-35 1-12-5-23-5-35-1v-50Z" fill="#75e0ca" fill-opacity=".07" stroke="#75e0ca" stroke-opacity=".65" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M983 104v50m-27-36h16m-16 10h16m23-10h15m-15 10h15" stroke="#75e0ca" stroke-opacity=".55" stroke-width="1.5" stroke-linecap="round"/>
+    <rect x="1036" y="99" width="56" height="65" rx="7" fill="#17263e" stroke="#779eff" stroke-opacity=".4"/>
+    <path d="M1047 113h34m-34 13h25m-25 13h29m-29 13h18" stroke="#778aa9" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
