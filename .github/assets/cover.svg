@@ -1,32 +1,71 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="240" viewBox="0 0 1200 240" role="img" aria-labelledby="title desc">
   <title id="title">Escolar — Matrículas, notas e frequência</title>
-  <desc id="desc">Identidade visual de André Amancio em azul escuro, ciano e violeta, com formas de circuitos.</desc>
+  <desc id="desc">Identidade visual de André Amancio em azul escuro, ciano e violeta, com formas de circuitos. Animações decorativas suaves nos circuitos, ilustrações e bordas; texto fixo. O movimento é desativado conforme a preferência de acessibilidade do sistema.</desc>
   <defs>
     <linearGradient id="base" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#08111e"/><stop offset="1" stop-color="#10182b"/>
+      <stop offset="0" stop-color="#08111e" /><stop offset="1" stop-color="#10182b" />
     </linearGradient>
     <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#75e0ca"/><stop offset="1" stop-color="#779eff"/>
+      <stop offset="0" stop-color="#75e0ca" /><stop offset="1" stop-color="#779eff" />
     </linearGradient>
-    <radialGradient id="halo"><stop stop-color="#75e0ca" stop-opacity=".13"/><stop offset="1" stop-color="#75e0ca" stop-opacity="0"/></radialGradient>
-    <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M30 0H0V30" fill="none" stroke="#9eb2d2" stroke-opacity=".07" stroke-width="1"/></pattern>
-    </defs>
-  <rect width="1200" height="240" rx="22" fill="url(#base)"/>
-    <rect x=".5" y=".5" width="1199" height="239" rx="21.5" fill="none" stroke="#28344d"/>
-    <rect x="756" y="1" width="443" height="238" rx="21" fill="url(#grid)"/>
-    <ellipse cx="1040" cy="139.2" rx="330" ry="240" fill="url(#halo)"/>
-    <path d="M24 32V208" stroke="url(#accent)" stroke-width="3" stroke-linecap="round"/>
-    <path d="M940 239H1176" stroke="#75e0ca" stroke-opacity=".28"/>
-    <path d="M764 35h56l21 21h50M769 205h49l23-23h52M1116 49h29v32M1111 200h34v-28" fill="none" stroke="#75e0ca" stroke-opacity=".33" stroke-width="1.5"/>
-    <circle cx="891" cy="56" r="3" fill="#75e0ca"/><circle cx="893" cy="182" r="3" fill="#779eff"/>
-    <rect x="76" y="34" width="75" height="28" rx="14" fill="#18243a" stroke="#75e0ca" stroke-opacity=".22"/>
-    <text x="113.5" y="54" fill="#aebed6" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="700" text-anchor="middle" letter-spacing="1">PROJETO</text><text x="75" y="128" fill="#f6f8ff" font-family="DejaVu Sans, Arial, sans-serif" font-size="60" font-weight="700" letter-spacing="-1.7">Escolar</text><text x="78" y="175" fill="#c9d5e8" font-family="DejaVu Sans, Arial, sans-serif" font-size="24" font-weight="400" letter-spacing="-.25">Matrículas, notas e frequência</text><rect x="78" y="197" width="60" height="3" rx="1.5" fill="url(#accent)"/><text x="1123" y="219" fill="#8195b4" font-family="DejaVu Sans, Arial, sans-serif" font-size="18" font-weight="600" text-anchor="end" letter-spacing="2">03</text><circle cx="1018" cy="119" r="92" fill="none" stroke="#75e0ca" stroke-opacity=".08"/>
-    <rect x="924" y="48" width="187" height="141" rx="16" fill="#101d31" stroke="url(#accent)" stroke-width="1.5"/>
-    <path d="M925 79h185" stroke="#75e0ca" stroke-opacity=".25"/>
-    <circle cx="941" cy="64" r="3" fill="#75e0ca"/><circle cx="953" cy="64" r="3" fill="#779eff"/>
-    <circle cx="965" cy="64" r="3" fill="#4a5971"/>
-    <path d="M948 103c12-4 23-4 35 1 12-5 23-5 35-1v50c-12-4-23-4-35 1-12-5-23-5-35-1v-50Z" fill="#75e0ca" fill-opacity=".07" stroke="#75e0ca" stroke-opacity=".65" stroke-width="1.5" stroke-linejoin="round"/>
-    <path d="M983 104v50m-27-36h16m-16 10h16m23-10h15m-15 10h15" stroke="#75e0ca" stroke-opacity=".55" stroke-width="1.5" stroke-linecap="round"/>
-    <rect x="1036" y="99" width="56" height="65" rx="7" fill="#17263e" stroke="#779eff" stroke-opacity=".4"/>
-    <path d="M1047 113h34m-34 13h25m-25 13h29m-29 13h18" stroke="#778aa9" stroke-width="2.5" stroke-linecap="round"/>
-</svg>
+    <radialGradient id="halo"><stop stop-color="#75e0ca" stop-opacity=".13" /><stop offset="1" stop-color="#75e0ca" stop-opacity="0" /></radialGradient>
+    <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M30 0H0V30" fill="none" stroke="#9eb2d2" stroke-opacity=".07" stroke-width="1" /></pattern>
+    <filter id="soft-glow" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="2.2" result="blur" in="SourceGraphic" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter><linearGradient id="shine-band" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#64e9ff" stop-opacity="0" /><stop offset=".45" stop-color="#64e9ff" stop-opacity=".04" /><stop offset=".5" stop-color="#d1f8ff" stop-opacity=".28" /><stop offset=".55" stop-color="#9583ff" stop-opacity=".07" /><stop offset="1" stop-color="#9583ff" stop-opacity="0" /></linearGradient><clipPath id="art-shine-clip" clipPathUnits="userSpaceOnUse"><rect x="918" y="43" width="199" height="152" rx="10" /></clipPath></defs>
+  <style type="text/css">/* Decorative motion only. Every text element remains static. */
+.float-art{animation:float-art 5.8s ease-in-out infinite;}
+.art-glow{animation:float-art 5.8s ease-in-out infinite,art-glow 5.8s ease-in-out infinite;}
+.ambient-halo{animation:ambient-halo 7.2s ease-in-out infinite;}
+.ring-glow{animation:ring-glow 6.4s ease-in-out infinite;}
+.orbit-flow{animation:orbit-flow 7.5s linear infinite;}
+.circuit-flow{animation:circuit-flow 4.4s linear infinite;}
+.edge-flow{animation:edge-flow 7.8s linear infinite;}
+.shine-sweep{animation:shine-sweep 7.4s ease-in-out infinite;}
+@keyframes float-art{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes art-glow{0%,100%{opacity:.18}50%{opacity:.45}}
+@keyframes ambient-halo{0%,100%{opacity:.58}50%{opacity:1}}
+@keyframes ring-glow{0%,100%{stroke-opacity:.1}50%{stroke-opacity:.26}}
+@keyframes orbit-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-104}}
+@keyframes circuit-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-146}}
+@keyframes edge-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-2832.81}}
+@keyframes shine-sweep{0%,12%{transform:translateX(0);opacity:0}25%{opacity:.65}65%{opacity:.65}88%,100%{transform:translateX(303px);opacity:0}}
+.route-one{animation:route-one 5.4s linear 0s infinite;}
+@keyframes route-one{0%{transform:translate(0px,0px);opacity:0}8%{transform:translate(13px,0px);opacity:.9}35%{transform:translate(56px,0px);opacity:.9}58%{transform:translate(77px,21px);opacity:.9}91%{transform:translate(114px,21px);opacity:.9}100%{transform:translate(127px,21px);opacity:0}}
+.route-two{animation:route-two 6.1s linear -2.3s infinite;}
+@keyframes route-two{0%{transform:translate(0px,0px);opacity:0}8%{transform:translate(9px,0px);opacity:.9}35%{transform:translate(49px,0px);opacity:.9}58%{transform:translate(72px,-23px);opacity:.9}91%{transform:translate(113px,-23px);opacity:.9}100%{transform:translate(124px,-23px);opacity:0}}
+
+@media (prefers-reduced-motion: reduce){
+  .motion{animation:none !important;transform:none !important;}
+  .travel-dot,.shine-sweep{display:none;}
+  .circuit-flow,.edge-flow{stroke-dasharray:none;opacity:.2;}
+  .art-glow{opacity:.18;}
+  .ambient-halo{opacity:1;}
+}
+</style><rect width="1200" height="240" rx="22" fill="url(#base)" />
+    <rect x=".5" y=".5" width="1199" height="239" rx="21.5" fill="none" stroke="#28344d" />
+    <rect x="756" y="1" width="443" height="238" rx="21" fill="url(#grid)" />
+    <ellipse cx="1040" cy="139.2" rx="330" ry="240" fill="url(#halo)" class="motion ambient-halo" />
+    <path d="M24 32V208" stroke="url(#accent)" stroke-width="3" stroke-linecap="round" />
+    <path d="M940 239H1176" stroke="#75e0ca" stroke-opacity=".28" />
+    <path d="M764 35h56l21 21h50M769 205h49l23-23h52M1116 49h29v32M1111 200h34v-28" fill="none" stroke="#75e0ca" stroke-opacity=".33" stroke-width="1.5" />
+    <circle cx="891" cy="56" r="3" fill="#75e0ca" /><circle cx="893" cy="182" r="3" fill="#779eff" />
+    <rect x="76" y="34" width="75" height="28" rx="14" fill="#18243a" stroke="#75e0ca" stroke-opacity=".22" />
+    <text x="113.5" y="54" fill="#aebed6" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="700" text-anchor="middle" letter-spacing="1">PROJETO</text><text x="75" y="128" fill="#f6f8ff" font-family="DejaVu Sans, Arial, sans-serif" font-size="60" font-weight="700" letter-spacing="-1.7">Escolar</text><text x="78" y="175" fill="#c9d5e8" font-family="DejaVu Sans, Arial, sans-serif" font-size="24" font-weight="400" letter-spacing="-.25">Matrículas, notas e frequência</text><rect x="78" y="197" width="60" height="3" rx="1.5" fill="url(#accent)" /><text x="1123" y="219" fill="#8195b4" font-family="DejaVu Sans, Arial, sans-serif" font-size="18" font-weight="600" text-anchor="end" letter-spacing="2">03</text><circle cx="1018" cy="119" r="92" fill="none" stroke="#75e0ca" stroke-opacity=".08" class="motion ring-glow" />
+    <g class="motion art-glow float-art" style="--float-height: 4px" filter="url(#soft-glow)" opacity=".28"><rect x="924" y="48" width="187" height="141" rx="16" fill="#101d31" stroke="url(#accent)" stroke-width="1.5" />
+    <path d="M925 79h185" stroke="#75e0ca" stroke-opacity=".25" />
+    <circle cx="941" cy="64" r="3" fill="#75e0ca" /><circle cx="953" cy="64" r="3" fill="#779eff" />
+    <circle cx="965" cy="64" r="3" fill="#4a5971" />
+    <path d="M948 103c12-4 23-4 35 1 12-5 23-5 35-1v50c-12-4-23-4-35 1-12-5-23-5-35-1v-50Z" fill="#75e0ca" fill-opacity=".07" stroke="#75e0ca" stroke-opacity=".65" stroke-width="1.5" stroke-linejoin="round" />
+    <path d="M983 104v50m-27-36h16m-16 10h16m23-10h15m-15 10h15" stroke="#75e0ca" stroke-opacity=".55" stroke-width="1.5" stroke-linecap="round" />
+    <rect x="1036" y="99" width="56" height="65" rx="7" fill="#17263e" stroke="#779eff" stroke-opacity=".4" />
+    <path d="M1047 113h34m-34 13h25m-25 13h29m-29 13h18" stroke="#778aa9" stroke-width="2.5" stroke-linecap="round" />
+</g><g class="motion float-art" style="--float-height: 4px"><rect x="924" y="48" width="187" height="141" rx="16" fill="#101d31" stroke="url(#accent)" stroke-width="1.5" />
+    <path d="M925 79h185" stroke="#75e0ca" stroke-opacity=".25" />
+    <circle cx="941" cy="64" r="3" fill="#75e0ca" /><circle cx="953" cy="64" r="3" fill="#779eff" />
+    <circle cx="965" cy="64" r="3" fill="#4a5971" />
+    <path d="M948 103c12-4 23-4 35 1 12-5 23-5 35-1v50c-12-4-23-4-35 1-12-5-23-5-35-1v-50Z" fill="#75e0ca" fill-opacity=".07" stroke="#75e0ca" stroke-opacity=".65" stroke-width="1.5" stroke-linejoin="round" />
+    <path d="M983 104v50m-27-36h16m-16 10h16m23-10h15m-15 10h15" stroke="#75e0ca" stroke-opacity=".55" stroke-width="1.5" stroke-linecap="round" />
+    <rect x="1036" y="99" width="56" height="65" rx="7" fill="#17263e" stroke="#779eff" stroke-opacity=".4" />
+    <path d="M1047 113h34m-34 13h25m-25 13h29m-29 13h18" stroke="#778aa9" stroke-width="2.5" stroke-linecap="round" />
+</g><path d="M764 35h56l21 21h50M769 205h49l23-23h52M1116 49h29v32M1111 200h34v-28" fill="none" stroke="url(#accent)" stroke-opacity=".75" stroke-width="2" class="motion circuit-flow" stroke-dasharray="15 58" filter="url(#soft-glow)" />
+    <circle cx="764" cy="35" r="3" fill="#cbfaff" opacity=".82" filter="url(#soft-glow)" class="motion travel-dot route-one" /><path d="M764 35h56l21 21h50M769 205h49l23-23h52M1116 49h29v32M1111 200h34v-28" fill="none" stroke="url(#accent)" stroke-opacity=".75" stroke-width="2" class="motion circuit-flow" stroke-dasharray="15 58" filter="url(#soft-glow)" />
+    <circle cx="769" cy="205" r="3" fill="#cbfaff" opacity=".82" filter="url(#soft-glow)" class="motion travel-dot route-two" /><g clip-path="url(#art-shine-clip)"><rect x="866" y="43" width="48" height="152" fill="url(#shine-band)" opacity="0" class="motion shine-sweep" /></g><rect x="1.5" y="1.5" width="1197" height="237" rx="20.5" fill="none" stroke="url(#accent)" stroke-width="1.7" stroke-linecap="round" stroke-dasharray="160 2672.81" opacity=".55" class="motion edge-flow" /></svg>
