@@ -1,4 +1,4 @@
-![Sistema Escolar — Amancio.dev](.github/assets/cover.svg)
+![Sistema Escolar — Amancio.dev](.github/assets/cover.svg?v=a660fd56fe)
 
 <div align="center">
 
